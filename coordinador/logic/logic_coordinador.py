@@ -27,7 +27,7 @@ def verificar(request):
                 nombre_estudiante = item.get('nombre_estudiante')
                 apellido_estudiante = item.get('apellido_estudiante')
                 nombre_padre = item.get('nombre_padre')
-                id_padre = item.get('id_padre')
+                id_padre = item.get('id_padre')   
 
                 # Verificar que se hayan proporcionado los datos requeridos
                 if not (nombre_estudiante and apellido_estudiante and nombre_padre and id_padre):
@@ -41,7 +41,8 @@ def verificar(request):
                 resultado_estudiante = verificar_estudiante(nombre_estudiante, apellido_estudiante)
 
                 # Verificar padre
-                resultado_padre = verificar_padre(id_padre, nombre_padre)
+                if resultado_estudiante['existe']:
+                    resultado_padre = verificar_padre(id_padre, nombre_padre, nombre_estudiante)
          
 
                 if resultado_estudiante['existe'] and resultado_padre['existe']:

@@ -6,9 +6,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         usuarios = [
-            {'nombre': 'Carlos', 'apellido': 'Pérez', 'tipo': 'AF', 'idEstudiante': 10101},
+            {'nombre': 'Carlos', 'apellido': 'Pérez', 'tipo': 'AF', 'idEstudiante': 1},
             {'nombre': 'Ana', 'apellido': 'Gómez', 'tipo': 'Profesor', 'idEstudiante': None},
-            {'nombre': 'Luisa', 'apellido': 'Martínez', 'tipo': 'AF', 'idEstudiante': 10202},
+            {'nombre': 'Luisa', 'apellido': 'Martínez', 'tipo': 'AF', 'idEstudiante': 2},
         ]
 
         for usuario_data in usuarios:

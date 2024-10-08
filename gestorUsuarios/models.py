@@ -5,7 +5,7 @@ class Usuario(models.Model):
     nombre = models.CharField(max_length=30)
     apellido = models.CharField(max_length=30)
     tipo = models.CharField(max_length=2)
-    idEstudiante = models.IntegerField(null=True, blank=True)
+    idEstudiante = models.IntegerField()
 
     def __str__(self):
         return f'{self.nombre} {self.apellido}'

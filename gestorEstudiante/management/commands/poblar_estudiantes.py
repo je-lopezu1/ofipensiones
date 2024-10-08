@@ -8,7 +8,7 @@ class Command(BaseCommand):
         # Crear usuarios de prueba
         estudiantes = [
             {'nombre': 'Juan', 'apellido': 'Perez', 'curso': 'Octavo'},
-            {'nombre': 'Ana', 'apellido': 'Gomez', 'curso': 'Noveno'},
+            {'nombre': 'Ana', 'apellido': 'Martinez', 'curso': 'Noveno'},
             {'nombre': 'Pedro', 'apellido': 'Martinez', 'curso': 'Primero'}
         ]
         
