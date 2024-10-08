@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Nuestras APPS
-    'gestorFinanciero'
+    'gestorFinanciero',
+    'gestorUsuarios',
 ]
 
 MIDDLEWARE = [
