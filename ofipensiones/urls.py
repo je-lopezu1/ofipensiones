@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from gestorUsuarios.views import verificar_padre
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('verificar-padre/<int:id_padre>/<str:nombre>/', verificar_padre, name='verificar_padre')
 ]
