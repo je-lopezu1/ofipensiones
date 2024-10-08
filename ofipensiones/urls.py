@@ -15,10 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from gestorUsuarios.views import verificar_padre
 
 from gestorEstudiante.views import verificar_estudiante
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('verificar-estudiante/<str:nombre_estudiante>/<str:apellido_estudiante>/', verificar_estudiante, name='verificar_estudiante')
 ]

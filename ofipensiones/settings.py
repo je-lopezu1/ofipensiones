@@ -40,7 +40,8 @@ INSTALLED_APPS = [
 
     # Nuestras APPS
     'gestorFinanciero',
-    'gestorEstudiante'
+    'gestorEstudiante',
+    'gestorUsuarios',
 ]
 
 MIDDLEWARE = [
