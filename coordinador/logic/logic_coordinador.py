@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from gestorEstudiante.views import verificar_estudiante as verificar_estudiante
 from gestorUsuarios.views import verificar_padre as verificar_padre
+from gestorFinanciero.views import verificar_monto as verificar_monto
 
 csrf_exempt  
 def verificar(request):
@@ -36,6 +37,8 @@ def verificar(request):
                         'data': item
                     })
                     continue
+
+                verificar_monto()
 
                 # Verificar estudiante
                 resultado_estudiante = verificar_estudiante(nombre_estudiante, apellido_estudiante)
