@@ -41,8 +41,8 @@ def verificar(request):
                 resultado_estudiante = verificar_estudiante(nombre_estudiante, apellido_estudiante)
 
                 # Verificar padre
-                if resultado_estudiante['existe']:
-                    resultado_padre = verificar_padre(id_padre, nombre_padre, nombre_estudiante)
+                
+                resultado_padre = verificar_padre(id_padre, nombre_padre, nombre_estudiante)
          
 
                 if resultado_estudiante['existe'] and resultado_padre['existe']:
