@@ -18,8 +18,10 @@ from django.urls import path
 from gestorUsuarios.views import verificar_padre
 from gestorEstudiante.views import verificar_estudiante
 from coordinador.views import verificar
+from coordinador.views import healthCheck
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('verificar/', verificar, name='verificar')
+    path('verificar/', verificar, name='verificar'),
+    path('health-check/', healthCheck, name='healthCheck')
 ]
