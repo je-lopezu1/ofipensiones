@@ -19,9 +19,11 @@ from gestorUsuarios.views import verificar_padre
 from gestorEstudiante.views import verificar_estudiante
 from coordinador.views import verificar
 from coordinador.views import healthCheck
+from coordinador.views import asociar
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('verificar/', verificar, name='verificar'),
+    path('asociar/', asociar, name='asociar'),
     path('health-check/', healthCheck, name='healthCheck')
 ]

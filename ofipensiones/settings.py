@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'gestorFinanciero',
     'gestorEstudiante',
     'gestorUsuarios',
+    'gestorCursos'
 ]
 
 MIDDLEWARE = [

@@ -7,16 +7,17 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         # Crear usuarios de prueba
         estudiantes = [
-            {'nombre': 'Juan', 'apellido': 'Perez', 'curso': 'Octavo'},
-            {'nombre': 'Ana', 'apellido': 'Martinez', 'curso': 'Noveno'},
-            {'nombre': 'Pedro', 'apellido': 'Martinez', 'curso': 'Primero'}
+            {'codigo': '202111348','nombre': 'Juan', 'apellido': 'Perez'},
+            {'codigo': '202421349','nombre': 'Manuela', 'apellido': 'Martinez'},
+            {'codigo': '201921359','nombre': 'Pedro', 'apellido': 'Martinez'}
         ]
         
         for estudiante in estudiantes:
             Estudiante.objects.create(
+                codigo=estudiante['codigo'], 
                 nombre=estudiante['nombre'], 
                 apellido=estudiante['apellido'], 
-                curso=estudiante['curso']
+               
             )
             self.stdout.write(self.style.SUCCESS(f"Estudiante {estudiante['nombre']} {estudiante['apellido']} creado"))
 
