@@ -20,10 +20,14 @@ from gestorEstudiante.views import verificar_estudiante
 from coordinador.views import verificar
 from coordinador.views import healthCheck
 from coordinador.views import asociar
+from votacion.views import votacion
+from gestorEstudiante.views import respuesta_disponibilidad
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('verificar/', verificar, name='verificar'),
     path('asociar/', asociar, name='asociar'),
-    path('health-check/', healthCheck, name='healthCheck')
+    path('health-check/', healthCheck, name='healthCheck'),
+    path('votacion/', votacion, name='votacion'),
+    path('disponibilidad/', respuesta_disponibilidad, name='disponibilidad'),
 ]

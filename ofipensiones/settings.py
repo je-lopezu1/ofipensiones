@@ -43,6 +43,13 @@ INSTALLED_APPS = [
     'gestorEstudiante',
     'gestorUsuarios',
     'gestorCursos'
+    'votacion'
+]
+
+NODES = [
+    'http://nodo1:8080/disponibilidad',
+    'http://nodo2:8080/disponibilidad',
+    'http://nodo3:8080/disponibilidad',
 ]
 
 MIDDLEWARE = [

@@ -15,3 +15,4 @@ def asociar(request):
 
 def healthCheck(request):
     return HttpResponse('ok')
+

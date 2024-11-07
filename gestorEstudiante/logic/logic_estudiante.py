@@ -1,3 +1,5 @@
+import random
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from gestorCursos.models import Curso
 from gestorEstudiante.models import Estudiante
@@ -31,5 +33,11 @@ def asociar_estudiante_curso(codigo_estudiante, codigo_curso):
     except Exception as e:
         # Manejar cualquier error que ocurra
         return {'exito': False, 'mensaje': f'Error al asociar el curso: {str(e)}'}
-
+    
+#Disponibilidad 
+    
+def nodo_respuesta(request):
+    # Simular respuesta correcta o incorrecta
+    resultado = "OK" if random.choice([True, False]) else "ERROR"
+    return JsonResponse({"resultado": resultado})
     
