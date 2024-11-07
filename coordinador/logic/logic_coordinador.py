@@ -141,9 +141,6 @@ def calcular_matricula (request):
 
                 # Asociar el estudiante con el curso
                 resultados.append(matricula(codigo_estudiante))
-
-                
-
             return JsonResponse({'resultados': resultados})
 
         except json.JSONDecodeError:

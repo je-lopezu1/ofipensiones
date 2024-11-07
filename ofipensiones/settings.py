@@ -43,14 +43,9 @@ INSTALLED_APPS = [
     'gestorEstudiante',
     'gestorUsuarios',
     'gestorCursos'
-    'votacion'
+   
 ]
 
-NODES = [
-    'http://10.128.0.61:8080/disponibilidad',
-    'http://10.128.0.62:8080/disponibilidad',
-    'http://10.128.0.63:8080/disponibilidad',
-]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

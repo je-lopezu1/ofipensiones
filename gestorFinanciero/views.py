@@ -7,4 +7,4 @@ def verificar_monto():
     calcular_monto()
 
 def matricula (codigo_estudiante):
-    calcular_matricula(codigo_estudiante)
+    return calcular_matricula(codigo_estudiante)

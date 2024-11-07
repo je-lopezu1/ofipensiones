@@ -12,4 +12,4 @@ def calcular_matricula(codigo_estudiante):
     matricula = random.randint(1000000, 10000000)
     
     # Devolver el número aleatorio y el resultado
-    return JsonResponse({"matricula": matricula})
+    return {"matricula": matricula}
