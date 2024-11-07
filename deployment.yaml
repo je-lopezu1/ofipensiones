@@ -1,0 +1,226 @@
+# ***************** Universidad de los Andes ***********************
+# ****** Departamento de Ingeniería de Sistemas y Computación ******
+# ********** Arquitectura y diseño de Software - ISIS2503 **********
+#
+# Infraestructura para Laboratorio de Circuit Breaker
+# Elementos a desplegar:
+# 1. Firewalls:
+#    - cbd-voting-apps
+#    - cbd-voting-apps-web
+#    - cbd-voting-node-1
+#    - cbd-voting-node-2
+#    - cbd-voting-node-3
+#    - cbd-voting-coordinator
+# 2. Instancias MVs:
+#    - cbd-voting-node-1 (Nodo de votación 1)
+#    - cbd-voting-node-2 (Nodo de votación 2)
+#    - cbd-voting-node-3 (Nodo de votación 3)
+#    - cbd-voting-coordinator (Coordinador de votaciones)
+
+resources:
+# Firewall rules
+- name: cbd-voting-apps
+  type: compute.v1.firewall
+  properties:
+    network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
+    priority: 1000
+    direction: INGRESS
+    sourceRanges: 
+    - 0.0.0.0/0
+    targetTags:
+    - cbd-voting-firewall
+    allowed:
+    - IPProtocol: TCP
+      ports: 
+      - 8080
+
+- name: cbd-voting-apps-web
+  type: compute.v1.firewall
+  properties:
+    network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
+    priority: 1000
+    direction: INGRESS
+    sourceRanges: 
+    - 0.0.0.0/0
+    targetTags:
+    - cbd-voting-firewall
+    allowed:
+    - IPProtocol: TCP
+      ports: 
+      - 8080
+
+- name: cbd-voting-node
+  type: compute.v1.firewall
+  properties:
+    network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
+    priority: 1000
+    direction: INGRESS
+    sourceRanges: 
+    - 0.0.0.0/0
+    targetTags:
+    - cbd-voting-node
+    allowed:
+    - IPProtocol: TCP
+      ports: 
+      - 9000
+
+- name: cbd-voting-coordinator
+  type: compute.v1.firewall
+  properties:
+    network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
+    priority: 1000
+    direction: INGRESS
+    sourceRanges: 
+    - 0.0.0.0/0
+    targetTags:
+    - cbd-voting-coordinator
+    allowed:
+    - IPProtocol: TCP
+      ports: 
+      - 9001
+
+# Voting Node 1 instance
+- type: compute.v1.instance
+  name: cbd-voting-node-1
+  properties:
+    zone: us-central1-a
+    machineType: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/zones/us-central1-a/machineTypes/e2-micro
+    disks:
+    - deviceName: boot
+      type: PERSISTENT
+      boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240307b
+    networkInterfaces:
+    - network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
+      networkIP: 10.128.0.61
+      accessConfigs:
+      - name: External NAT
+        type: ONE_TO_ONE_NAT
+    tags:
+      items: 
+      - cbd-voting-node
+    metadata:
+      items:
+      - key: startup-script
+        value: |
+          #!/bin/bash
+          sudo apt-get update
+          sudo apt install python3-pip -y
+          sudo mkdir /labs
+          cd /labs
+          sudo git clone https://github.com/ISIS2503/ISIS2503-VotingApp.git
+          cd ISIS2503-VotingApp
+          sudo git checkout voting-node
+          sudo pip3 install -r requirements.txt
+
+# Voting Node 2 instance
+- type: compute.v1.instance
+  name: cbd-voting-node-2
+  properties:
+    zone: us-central1-a
+    machineType: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/zones/us-central1-a/machineTypes/e2-micro
+    disks:
+    - deviceName: boot
+      type: PERSISTENT
+      boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240307b
+    networkInterfaces:
+    - network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
+      networkIP: 10.128.0.62
+      accessConfigs:
+      - name: External NAT
+        type: ONE_TO_ONE_NAT
+    tags:
+      items: 
+      - cbd-voting-node
+    metadata:
+      items:
+      - key: startup-script
+        value: |
+          #!/bin/bash
+          sudo apt-get update
+          sudo apt install python3-pip -y
+          sudo mkdir /labs
+          cd /labs
+          sudo git clone https://github.com/ISIS2503/ISIS2503-VotingApp.git
+          cd ISIS2503-VotingApp
+          sudo git checkout voting-node
+          sudo pip3 install -r requirements.txt
+
+# Voting Node 3 instance
+- type: compute.v1.instance
+  name: cbd-voting-node-3
+  properties:
+    zone: us-central1-a
+    machineType: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/zones/us-central1-a/machineTypes/e2-micro
+    disks:
+    - deviceName: boot
+      type: PERSISTENT
+      boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240307b
+    networkInterfaces:
+    - network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
+      networkIP: 10.128.0.63
+      accessConfigs:
+      - name: External NAT
+        type: ONE_TO_ONE_NAT
+    tags:
+      items: 
+      - cbd-voting-node
+    metadata:
+      items:
+      - key: startup-script
+        value: |
+          #!/bin/bash
+          sudo apt-get update
+          sudo apt install python3-pip -y
+          sudo mkdir /labs
+          cd /labs
+          sudo git clone https://github.com/ISIS2503/ISIS2503-VotingApp.git
+          cd ISIS2503-VotingApp
+          sudo git checkout voting-node
+          sudo pip3 install -r requirements.txt
+
+# Voting Coordinator instance
+- type: compute.v1.instance
+  name: cbd-voting-coordinator
+  properties:
+    zone: us-central1-a
+    machineType: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/zones/us-central1-a/machineTypes/e2-micro
+    disks:
+    - deviceName: boot
+      type: PERSISTENT
+      boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240307b
+    networkInterfaces:
+    - network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
+      networkIP: 10.128.0.64
+      accessConfigs:
+      - name: External NAT
+        type: ONE_TO_ONE_NAT
+    tags:
+      items: 
+      - cbd-voting-coordinator
+    metadata:
+      items:
+      - key: startup-script
+        value: |
+          #!/bin/bash
+          sudo apt-get update
+          sudo apt install python3-pip -y
+          sudo mkdir /labs
+          cd /labs
+          sudo git clone https://github.com/ISIS2503/ISIS2503-VotingApp.git
+          cd ISIS2503-VotingApp
+          sudo git checkout coordinator
+          sudo pip3 install -r requirements.txt
+          sudo python3 manage.py makemigrations
+          sudo python3 manage.py migrate
