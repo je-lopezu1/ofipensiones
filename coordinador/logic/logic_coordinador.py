@@ -4,6 +4,7 @@ from gestorEstudiante.views import verificar_estudiante as verificar_estudiante
 from gestorEstudiante.views import asociar as asociar_estudiante_curso
 from gestorUsuarios.views import verificar_padre as verificar_padre
 from gestorFinanciero.views import verificar_monto as verificar_monto
+from gestorFinanciero.views import matricula 
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
@@ -100,6 +101,48 @@ def asociar(request):
                     resultados.append({"Asociación Realizada": resultado_asociacion})
                 else:
                     resultados.append({"Error en la Asociación": resultado_asociacion})
+
+            return JsonResponse({'resultados': resultados})
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'JSON inválido'}, status=400)
+    else:
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+
+def calcular_matricula (request):
+    if request.method == 'POST':
+        try:
+            # Cargar los datos del cuerpo de la solicitud JSON
+            data = json.loads(request.body)
+
+            # Si data es un solo objeto, convertirlo a una lista con un solo elemento
+            if isinstance(data, dict):
+                data = [data]  # Convertir a lista
+
+            # Verificar que 'data' sea una lista
+            if not isinstance(data, list):
+                return JsonResponse({'error': 'Se esperaba un objeto o un arreglo de objetos.'}, status=400)
+
+            resultados = []
+
+            # Iterar sobre cada objeto en la lista
+            for item in data:
+                # Extraer los datos del estudiante y del curso
+                codigo_estudiante = item.get('codigo_estudiante')
+               
+                # Verificar que se hayan proporcionado los datos requeridos
+                if not (codigo_estudiante ):
+                    resultados.append({
+                        'error': 'Faltan datos obligatorios en uno de los objetos',
+                        'data': item
+                    })
+                    continue
+
+                # Asociar el estudiante con el curso
+                resultados.append(matricula(codigo_estudiante))
+
+                
 
             return JsonResponse({'resultados': resultados})
 

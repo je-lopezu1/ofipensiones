@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from coordinador.logic.logic_coordinador import verificar as verificar_general
 from coordinador.logic.logic_coordinador import asociar as asociar_general
+from coordinador.logic.logic_coordinador import calcular_matricula as calcular
 from django.http import HttpResponse
 
 def verificar(request):
@@ -15,4 +16,8 @@ def asociar(request):
 
 def healthCheck(request):
     return HttpResponse('ok')
+
+def monto(request):
+    resultado = calcular(request)
+    return (resultado)
 
