@@ -1,0 +1,51 @@
+_format_version: "2.1"
+
+services:
+  - host: gestor_upstream
+    name: gestor
+_service
+    protocol: http
+    routes:
+      - name: gestor
+  
+        paths:
+          - /
+        strip_path: false
+
+  - host: ofipensiones_upstream
+    name: ofipensiones_service
+    protocol: http
+    routes:
+      - name: ofipensiones_route
+        paths:
+          - /ofipensiones
+        strip_path: false
+
+upstreams:
+  - name: ofipensiones_upstream
+    targets:
+      - target: <ip-privada-financial-app-a>:8080
+        weight: 100
+      - target: <ip-privada-financial-app-b>:8080
+        weight: 100
+      - target: <ip-privada-financial-app-c>:8080
+        weight: 100
+    healthchecks:
+      threshold: 1
+      active:
+        type: http
+        http_path: /health/
+        timeout: 1
+        healthy:
+          interval: 5  # Intervalo de 5 segundos para verificar instancias saludables
+          successes: 2 # Dos respuestas exitosas para marcar la instancia como saludable
+        unhealthy:
+          interval: 5
+          tcp_failures: 2  # Dos fallos TCP antes de marcar como no saludable
+          http_failures: 2 # Dos fallos HTTP antes de marcar como no saludable
+          timeouts: 2      # Dos fallos de tiempo de espera antes de marcar como no saludable
+
+  - name: gestor_upstream
+    targets:
+      - target: <ip-privada-gestor-app>:8080
+        weight: 100
