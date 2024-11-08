@@ -20,6 +20,7 @@ def healthCheck(request):
 
 @require_http_methods(["GET", "POST"])
 def monto(request):
+    print("Método de la solicitud:", request.method)
     if request.method == "POST":
         resultado = calcular(request)
         return resultado
