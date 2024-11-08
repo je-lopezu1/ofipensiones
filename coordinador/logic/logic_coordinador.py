@@ -111,7 +111,7 @@ def asociar(request):
     
 
 def calcular_matricula (request):
-    if request.method == 'POST':
+    if request.method == 'GET':
         try:
             # Cargar los datos del cuerpo de la solicitud JSON
             data = json.loads(request.body)
@@ -130,7 +130,7 @@ def calcular_matricula (request):
             for item in data:
                 # Extraer los datos del estudiante y del curso
                 codigo_estudiante = item.get('codigo_estudiante')
-               
+
                 # Verificar que se hayan proporcionado los datos requeridos
                 if not (codigo_estudiante ):
                     resultados.append({

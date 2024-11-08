@@ -21,9 +21,9 @@ def healthCheck(request):
 @require_http_methods(["GET", "POST"])
 def monto(request):
     print("Método de la solicitud:", request.method)
-    if request.method == "POST":
+    if request.method == "GET":
         resultado = calcular(request)
         return resultado
-    elif request.method == "GET":
-        return JsonResponse({"error": "Método GET no está soportado para esta operación."}, status=405)
+    elif request.method == "POST":
+        return JsonResponse({"error": "Método POST no está soportado para esta operación."}, status=405)
 
