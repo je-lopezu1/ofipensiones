@@ -21,6 +21,7 @@ from coordinador.views import verificar
 from coordinador.views import healthCheck
 from coordinador.views import asociar
 from coordinador.views import monto
+from . import views
 
 
 urlpatterns = [
@@ -29,5 +30,6 @@ urlpatterns = [
     path('asociar/', asociar, name='asociar'),
     path('health-check/', healthCheck, name='healthCheck'),
     path('monto/', monto, name='votacion'),
+     path('health/', views.health_check, name='health'),
 
 ]
