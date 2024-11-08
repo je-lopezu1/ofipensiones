@@ -2,39 +2,37 @@
 # ****** Departamento de Ingeniería de Sistemas y Computación ******
 # ********** Arquitectura y diseño de Software - ISIS2503 **********
 #
-# Infraestructura para Laboratorio de Circuit Breaker
+# Infraestructura para prueba de disponibilidad con circuit braker
 # Elementos a desplegar:
 # 1. Firewalls:
-#    - cbd-voting-apps
-#    - cbd-voting-apps-web
-#    - cbd-voting-node-1
-#    - cbd-voting-node-2
-#    - cbd-voting-node-3
-#    - cbd-voting-coordinator
+#    - cbd-services-apps
+#    - cbd-services-apps-web
+#    - cbd-circuit-breaker
+#    - cbd-circuit-breaker-admin
+#    - cbd-ofipensiones-db
 # 2. Instancias MVs:
-#    - cbd-voting-node-1 (Nodo de votación 1)
-#    - cbd-voting-node-2 (Nodo de votación 2)
-#    - cbd-voting-node-3 (Nodo de votación 3)
-#    - cbd-voting-coordinator (Coordinador de votaciones)
+#    - cbd-kong-instance
+#    - cbd-db-instance (postgreSQL instalado y configurado)
+#    - cbd-Gestor-app-(a-c) (ofipensiones app instalada)
+#    - cbd-ofipensiones-app (ofipensiones app instalada y ejecutando)
 
 resources:
 # Firewall rules
-- name: cbd-voting-apps
+- name: cbd-services-apps
   type: compute.v1.firewall
   properties:
     network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
     priority: 1000
     direction: INGRESS
-    sourceRanges: 
-    - 0.0.0.0/0
+    sourceTags: 
+    - cbd-circuit-breaker
     targetTags:
-    - cbd-voting-firewall
+    - cbd-services-firewall
     allowed:
     - IPProtocol: TCP
       ports: 
       - 8080
-
-- name: cbd-voting-apps-web
+- name: cbd-services-apps-web
   type: compute.v1.firewall
   properties:
     network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
@@ -43,13 +41,12 @@ resources:
     sourceRanges: 
     - 0.0.0.0/0
     targetTags:
-    - cbd-voting-firewall
+    - cbd-services-firewall
     allowed:
     - IPProtocol: TCP
       ports: 
       - 8080
-
-- name: cbd-voting-node
+- name: cbd-circuit-breaker
   type: compute.v1.firewall
   properties:
     network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
@@ -58,13 +55,12 @@ resources:
     sourceRanges: 
     - 0.0.0.0/0
     targetTags:
-    - cbd-voting-node
+    - cbd-circuit-breaker
     allowed:
     - IPProtocol: TCP
       ports: 
-      - 9000
-
-- name: cbd-voting-coordinator
+      - 8000
+- name: cbd-circuit-breaker-admin
   type: compute.v1.firewall
   properties:
     network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
@@ -73,15 +69,29 @@ resources:
     sourceRanges: 
     - 0.0.0.0/0
     targetTags:
-    - cbd-voting-coordinator
+    - cbd-circuit-breaker
     allowed:
     - IPProtocol: TCP
       ports: 
-      - 9001
+      - 8001
+- name: cbd-ofipensiones-db
+  type: compute.v1.firewall
+  properties:
+    network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
+    priority: 1000
+    direction: INGRESS
+    sourceTags: 
+    - cbd-services-firewall
+    targetTags:
+    - cbd-ofipensiones-db
+    allowed:
+    - IPProtocol: TCP
+      ports: 
+      - 5432
 
-# Voting Node 1 instance
+# Kong instance
 - type: compute.v1.instance
-  name: cbd-voting-node-1
+  name: cbd-kong-instance
   properties:
     zone: us-central1-a
     machineType: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/zones/us-central1-a/machineTypes/e2-micro
@@ -94,13 +104,72 @@ resources:
         sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240307b
     networkInterfaces:
     - network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
-      networkIP: 10.128.0.61
+      networkIP: 10.128.0.51
       accessConfigs:
       - name: External NAT
         type: ONE_TO_ONE_NAT
     tags:
       items: 
-      - cbd-voting-node
+      - cbd-circuit-breaker
+
+# Database instance
+- type: compute.v1.instance
+  name: cbd-db-instance
+  properties:
+    zone: us-central1-a
+    machineType: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/zones/us-central1-a/machineTypes/e2-micro
+    disks:
+    - deviceName: boot
+      type: PERSISTENT
+      boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240307b
+    networkInterfaces:
+    - network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
+      networkIP: 10.128.0.52
+      accessConfigs:
+      - name: External NAT
+        type: ONE_TO_ONE_NAT
+    tags:
+      items: 
+      - cbd-ofipensiones-db
+    metadata:
+      items:
+      - key: startup-script
+        value: |
+          #!/bin/bash
+          sudo apt-get update
+          sudo apt-get install -y postgresql postgresql-contrib
+          sudo -u postgres psql -c "CREATE USER ofipensiones_user WITH PASSWORD 'isis2503';"
+          sudo -u postgres createdb -O ofipensiones_user ofipensiones_db
+          echo "host all all 0.0.0.0/0 trust" | sudo tee -a /etc/postgresql/12/main/pg_hba.conf
+          echo "listen_addresses='*'" | sudo tee -a /etc/postgresql/12/main/postgresql.conf
+          echo "max_connections=2000" | sudo tee -a /etc/postgresql/12/main/postgresql.conf
+          sudo service postgresql restart
+
+# Gestor instances
+- type: compute.v1.instance
+  name: cbd-Gestor-app-a
+  properties:
+    zone: us-central1-a
+    machineType: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/zones/us-central1-a/machineTypes/e2-micro
+    disks:
+    - deviceName: boot
+      type: PERSISTENT
+      boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240307b
+    networkInterfaces:
+    - network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
+      networkIP: 10.128.0.53
+      accessConfigs:
+      - name: External NAT
+        type: ONE_TO_ONE_NAT
+    tags:
+      items: 
+      - cbd-services-firewall
     metadata:
       items:
       - key: startup-script
@@ -110,14 +179,45 @@ resources:
           sudo apt install python3-pip -y
           sudo mkdir /labs
           cd /labs
-          sudo git clone https://github.com/ISIS2503/ISIS2503-VotingApp.git
-          cd ISIS2503-VotingApp
-          sudo git checkout voting-node
+          sudo git clone https://github.com/je-lopezu1/ofipensiones.git
+          cd ofipensiones
+          sudo pip3 install -r requirements.txt
+- type: compute.v1.instance
+  name: cbd-Gestor-app-b
+  properties:
+    zone: us-central1-a
+    machineType: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/zones/us-central1-a/machineTypes/e2-micro
+    disks:
+    - deviceName: boot
+      type: PERSISTENT
+      boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240307b
+    networkInterfaces:
+    - network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
+      networkIP: 10.128.0.54
+      accessConfigs:
+      - name: External NAT
+        type: ONE_TO_ONE_NAT
+    tags:
+      items: 
+      - cbd-services-firewall
+    metadata:
+      items:
+      - key: startup-script
+        value: |
+          #!/bin/bash
+          sudo apt-get update
+          sudo apt install python3-pip -y
+          sudo mkdir /labs
+          cd /labs
+          sudo git clone https://github.com/je-lopezu1/ofipensiones.git
+          cd ofipensiones
           sudo pip3 install -r requirements.txt
 
-# Voting Node 2 instance
 - type: compute.v1.instance
-  name: cbd-voting-node-2
+  name: cbd-Gestor-app-c
   properties:
     zone: us-central1-a
     machineType: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/zones/us-central1-a/machineTypes/e2-micro
@@ -130,13 +230,13 @@ resources:
         sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240307b
     networkInterfaces:
     - network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
-      networkIP: 10.128.0.62
+      networkIP: 10.128.0.55
       accessConfigs:
       - name: External NAT
         type: ONE_TO_ONE_NAT
     tags:
       items: 
-      - cbd-voting-node
+      - cbd-services-firewall
     metadata:
       items:
       - key: startup-script
@@ -146,14 +246,13 @@ resources:
           sudo apt install python3-pip -y
           sudo mkdir /labs
           cd /labs
-          sudo git clone https://github.com/ISIS2503/ISIS2503-VotingApp.git
-          cd ISIS2503-VotingApp
-          sudo git checkout voting-node
+          sudo git clone https://github.com/je-lopezu1/ofipensiones.git
+          cd ofipensiones
+          sudo git checkout Circuit-Breaker
           sudo pip3 install -r requirements.txt
-
-# Voting Node 3 instance
+# ofipensiones app instance
 - type: compute.v1.instance
-  name: cbd-voting-node-3
+  name: cbd-ofipensiones-app
   properties:
     zone: us-central1-a
     machineType: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/zones/us-central1-a/machineTypes/e2-micro
@@ -166,13 +265,13 @@ resources:
         sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240307b
     networkInterfaces:
     - network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
-      networkIP: 10.128.0.63
+      networkIP: 10.128.0.56
       accessConfigs:
       - name: External NAT
         type: ONE_TO_ONE_NAT
     tags:
       items: 
-      - cbd-voting-node
+      - cbd-services-firewall
     metadata:
       items:
       - key: startup-script
@@ -182,45 +281,8 @@ resources:
           sudo apt install python3-pip -y
           sudo mkdir /labs
           cd /labs
-          sudo git clone https://github.com/ISIS2503/ISIS2503-VotingApp.git
-          cd ISIS2503-VotingApp
-          sudo git checkout voting-node
-          sudo pip3 install -r requirements.txt
-
-# Voting Coordinator instance
-- type: compute.v1.instance
-  name: cbd-voting-coordinator
-  properties:
-    zone: us-central1-a
-    machineType: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/zones/us-central1-a/machineTypes/e2-micro
-    disks:
-    - deviceName: boot
-      type: PERSISTENT
-      boot: true
-      autoDelete: true
-      initializeParams:
-        sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240307b
-    networkInterfaces:
-    - network: https://www.googleapis.com/compute/v1/projects/<id-proyecto>/global/networks/default
-      networkIP: 10.128.0.64
-      accessConfigs:
-      - name: External NAT
-        type: ONE_TO_ONE_NAT
-    tags:
-      items: 
-      - cbd-voting-coordinator
-    metadata:
-      items:
-      - key: startup-script
-        value: |
-          #!/bin/bash
-          sudo apt-get update
-          sudo apt install python3-pip -y
-          sudo mkdir /labs
-          cd /labs
-          sudo git clone https://github.com/ISIS2503/ISIS2503-VotingApp.git
-          cd ISIS2503-VotingApp
-          sudo git checkout coordinator
+          sudo git clone https://github.com/je-lopezu1/ofipensiones.git
+          cd ofipensiones
           sudo pip3 install -r requirements.txt
           sudo python3 manage.py makemigrations
           sudo python3 manage.py migrate
