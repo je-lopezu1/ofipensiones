@@ -86,8 +86,20 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        
     }
 }
+
+"""DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'ofipensiones_db',
+        'USER': 'ofipensiones_user',
+        'PASSWORD': 'isis2503',
+        'HOST': '10.128.0.2',
+        'PORT': '',
+    }
+}"""
 
 
 # Password validation
