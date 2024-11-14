@@ -8,5 +8,5 @@ class Curso(models.Model):
     
     # Este método devuelve una representación en cadena de un objeto estudiante
     def __str__(self):
-        return f"{self.codigo} -{self.nombre}"
+        return f"{self.codigo} - {self.nombre}"
 

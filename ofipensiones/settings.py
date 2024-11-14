@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'gestorFinanciero',
     'gestorEstudiante',
     'gestorUsuarios',
-    'gestorCursos'
+    'gestorCursos',
+    'gestorPersistencia'
    
 ]
 

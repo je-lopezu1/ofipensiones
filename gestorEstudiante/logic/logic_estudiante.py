@@ -40,4 +40,5 @@ def nodo_respuesta(request):
     # Simular respuesta correcta o incorrecta
     resultado = "OK" if random.choice([True, False]) else "ERROR"
     return JsonResponse({"resultado": resultado})
+
     

@@ -21,6 +21,9 @@ from coordinador.views import verificar
 from coordinador.views import healthCheck
 from coordinador.views import asociar
 from coordinador.views import monto
+from coordinador.views import crear_curso
+from gestorPersistencia.views import pruebasSeguridad
+from gestorPersistencia.views import eliminarCursos
 from . import views
 
 
@@ -30,6 +33,10 @@ urlpatterns = [
     path('asociar/', asociar, name='asociar'),
     path('health-check/', healthCheck, name='healthCheck'),
     path('monto/', monto, name='votacion'),
-     path('health/', views.health_check, name='health'),
+    path('health/', views.health_check, name='health'),
+    path('crear-curso/', crear_curso, name='crear-curso'),
+    path('pruebas-seguridad/', pruebasSeguridad, name='pruebas-seguridad'),
+    path('eliminar-curso/', eliminarCursos, name='eliminar-curso'),
+
 
 ]

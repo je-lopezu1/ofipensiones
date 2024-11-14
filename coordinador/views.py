@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from coordinador.logic.logic_coordinador import verificar as verificar_general
 from coordinador.logic.logic_coordinador import asociar as asociar_general
 from coordinador.logic.logic_coordinador import calcular_matricula as calcular
+from coordinador.logic.logic_coordinador import crearCurso
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 
@@ -17,6 +18,10 @@ def asociar(request):
 
 def healthCheck(request):
     return HttpResponse('ok')
+
+def crear_curso(request):
+    resultado = crearCurso(request)
+    return (resultado)
 
 @require_http_methods(["GET", "POST"])
 def monto(request):
