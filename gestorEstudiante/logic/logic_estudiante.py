@@ -1,6 +1,6 @@
 import random
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from gestorCursos.models import Curso
 from gestorEstudiante.models import Estudiante
 from django.core.exceptions import ObjectDoesNotExist
@@ -40,5 +40,27 @@ def nodo_respuesta(request):
     # Simular respuesta correcta o incorrecta
     resultado = "OK" if random.choice([True, False]) else "ERROR"
     return JsonResponse({"resultado": resultado})
+
+#Crear estudiante
+
+def crear_estudiante(request):
+    if request.method == "POST":
+        codigo = request.POST.get('codigo')
+        nombre = request.POST.get('nombre')
+        apellido = request.POST.get('apellido')
+
+        # Crear y guardar el estudiante en la base de datos
+        estudiante = Estudiante(codigo=codigo, nombre=nombre, apellido=apellido)
+        estudiante.save()
+
+        # Redirige o responde con un mensaje de éxito
+        return redirect ("lista_estudiantes")
+
+    # Si es una solicitud GET, muestra el formulario
+    return render(request, 'crear_estudiante.html')
+
+def lista_estudiantes(request):
+    estudiantes = Estudiante.objects.all()  # Obtener todos los estudiantes de la base de datos
+    return render(request, 'estudiante.html', {'estudiantes': estudiantes})
 
     

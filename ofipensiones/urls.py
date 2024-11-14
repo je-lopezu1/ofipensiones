@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from gestorUsuarios.views import verificar_padre
-from gestorEstudiante.views import verificar_estudiante
+from gestorEstudiante.views import verificar_estudiante, crear, listar
 from coordinador.views import verificar
 from coordinador.views import healthCheck
 from coordinador.views import asociar
@@ -25,6 +25,8 @@ from coordinador.views import crear_curso
 from gestorPersistencia.views import pruebasSeguridad
 from gestorPersistencia.views import eliminarCursos
 from . import views
+from gestorEstudiante.views import verificar_estudiante
+from django.conf.urls import include
 
 
 urlpatterns = [
@@ -37,6 +39,11 @@ urlpatterns = [
     path('crear-curso/', crear_curso, name='crear-curso'),
     path('pruebas-seguridad/', pruebasSeguridad, name='pruebas-seguridad'),
     path('eliminar-curso/', eliminarCursos, name='eliminar-curso'),
+    path('crear-estudiante/', crear, name='crear_estudiante'),
+    path('lista_estudiantes/', listar, name='lista_estudiantes'),
+    path('', views.index),
+    path(r'', include('django.contrib.auth.urls')),
+    path(r'', include('social_django.urls')),
 
 
 ]
