@@ -17,7 +17,6 @@ def guardar_curso(curso):
 
     # Crear un hash del curso
     curso_hash = hash.sha256(informacion.encode()).hexdigest()
-    print(curso_hash)
 
     # Guardar Hash
     curso_hash = Hash(id=id, hash=curso_hash)
@@ -49,8 +48,6 @@ def revision_hash():
         iguales = curso_hash == hash_modelo.hash
 
         i += 1
-
-        print(curso_hash, hash_modelo.hash)
 
     # Devolver el diccionario con los hashes
     return iguales
